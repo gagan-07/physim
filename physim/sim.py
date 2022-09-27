@@ -7,12 +7,12 @@ def main():
         #basic initialisation
         WIDTH = 600
         HEIGHT = 600 
-        FPS = 60
+        FPS = 240
         running = True
         pygame.init()
         screen = pygame.display.set_mode((WIDTH,HEIGHT))
         clock = pygame.time.Clock()
-        time_step = 1/FPS
+        time_step = 1/(0.20*FPS)
 
 
         class Particle():
@@ -37,8 +37,9 @@ def main():
         #to store all the particle that are created during program execution
         particle_list = []
         button_up = False
+        x,y=(None,None)
         while running:
-            # clock.tick(120)
+            clock.tick(FPS)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -47,10 +48,6 @@ def main():
                     x,y = pygame.mouse.get_pos()
                     if not button_up:
                         pygame.draw.circle(screen,(255,255,255),(x,y),10,6)
-                        print("this ran!")
-                    # particle = Particle(x,y,(-10,0))
-                    # particle.create_particle()
-                    # particle_list.append(particle)
                 if event.type == pygame.MOUSEBUTTONUP:
                     button_up = True
                     x1,y1  = pygame.mouse.get_pos()
@@ -58,6 +55,14 @@ def main():
                     particle = Particle(x,y,velocity)
                     particle.create_particle()
                     particle_list.append(particle)
+                    x=None
+
+            if x!=None:
+                mouse_pos = pygame.mouse.get_pos()
+                distance = (((x-mouse_pos[0])**2+(y-mouse_pos[1])**2)**0.5)
+                pygame.draw.circle(screen,(255,255,255),(x,y),19,1)
+                
+                pygame.draw.line(screen,(distance%255,0.2*distance%255,88),(x,y),(mouse_pos),5)
 
             if particle_list:
                 for particle in particle_list:
@@ -68,9 +73,8 @@ def main():
                         particle_list.remove(particle)
                     else:
                         particle.update_position()
-            print(particle_list)
             pygame.display.flip()
-            # screen.fill((0,0,0))
+            screen.fill((0,0,0))
 
 
 if __name__ == '__main__':
