@@ -25,7 +25,7 @@ def main():
                 self.y_pos = 0
                 self.ini_velocity = ini_velocity
                 self.x = 0
-                self.radius =  5
+                self.radius =  15
                 self.density = 0.78
                 self.mass = self.density * (4/3)*math.pi*(self.radius**3)
                 self.wall_pen= True
@@ -55,10 +55,20 @@ def main():
                 for particle2 in particle_list:
                     if particle != particle2:
                         if ((particle.ini_x_pos-particle2.ini_x_pos)**2 +  (particle.ini_y_pos-particle2.ini_y_pos)**2)**0.5  < (particle.radius + particle2.radius):
-                            particle.ini_x_pos -= particle.ini_velocity[0]*time_step
-                            particle.ini_y_pos -= particle.ini_velocity[1]*time_step
-                            particle2.ini_x_pos -= particle2.ini_velocity[0]*time_step
-                            particle2.ini_y_pos -= particle2.ini_velocity[1]*time_step
+                            # particle.ini_x_pos -= particle.ini_velocity[0]*time_step
+                            # particle.ini_y_pos -= particle.ini_velocity[1]*time_step
+                            # particle2.ini_x_pos -= particle2.ini_velocity[0]*time_step
+                            # particle2.ini_y_pos -= particle2.ini_velocity[1]*time_step
+                            inter_radius_dist = math.sqrt((particle.ini_x_pos-particle2.ini_x_pos)**2 +  (particle.ini_y_pos-particle2.ini_y_pos)**2)
+                            inter_dist = particle.radius + particle2.radius - inter_radius_dist
+                            slope = (particle2.ini_y_pos-particle.ini_y_pos)/(particle2.ini_x_pos-particle.ini_x_pos)
+                            inter_radius_angle = math.atan(slope)
+                            particle1_adjusment =((particle.radius-inter_dist)/(particle.radius+particle2.radius))*inter_dist
+                            particle2.adjustment = ((inter_dist+particle2.radius)/particle.radius+particle2.radius)*inter_dist
+                            particle.ini_x_pos -= particle1_adjusment*math.cos(inter_radius_angle)
+                            particle.ini_y_pos -= particle1_adjusment*math.sin(inter_radius_angle)
+                            particle2.ini_x_pos += particle1_adjusment*math.cos(inter_radius_angle) 
+                            particle2.ini_y_pos += particle1_adjusment*math.sin(inter_radius_angle)
                             vector1,vector2 = particle.ini_velocity,particle2.ini_velocity
                             dot_product = (vector1[0]*vector2[0]+vector1[1]*vector2[1])/(math.sqrt(vector1[0]**2+vector1[1]**2)*math.sqrt(vector2[0]**2+vector2[1]**2)+0.000001)
                             # print("the dot product is " + str(dot_product))
@@ -101,7 +111,7 @@ def main():
             if x!=None:
                 mouse_pos = pygame.mouse.get_pos()
                 distance = (((x-mouse_pos[0])**2+(y-mouse_pos[1])**2)**0.5)
-                pygame.draw.circle(screen,(255,255,255),(x,y),25,1)
+                pygame.draw.circle(screen,(255,255,255),(x,y),15,1)
                 
                 pygame.draw.line(screen,(distance%255,0.2*distance%255,88),(x,y),(mouse_pos),5)
 
